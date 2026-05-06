@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Showtime</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main id="app" class="showtime" aria-live="polite">
+      <section class="stage" aria-label="Slide deck">
+        <article id="slide" class="slide" tabindex="0"></article>
+      </section>
+
+      <aside id="notes" class="notes" aria-label="Speaker notes"></aside>
+
+      <nav class="controls" aria-label="Presentation controls">
+        <button id="prev" class="icon-button" type="button" aria-label="Previous slide" title="Previous slide">
+          <span aria-hidden="true">‹</span>
+        </button>
+        <label class="deck-picker" for="deck-input">
+          <span>Deck</span>
+          <input id="deck-input" type="text" value="decks/lecture.md" autocomplete="off">
+        </label>
+        <button id="load-deck" type="button">Load</button>
+        <output id="progress" class="progress" aria-label="Slide progress"></output>
+        <button id="notes-toggle" class="icon-button" type="button" aria-label="Toggle speaker notes" title="Toggle speaker notes">
+          <span aria-hidden="true">≡</span>
+        </button>
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="Toggle theme" title="Toggle theme">
+          <span aria-hidden="true">◐</span>
+        </button>
+        <button id="fullscreen" class="icon-button" type="button" aria-label="Enter fullscreen" title="Enter fullscreen">
+          <span aria-hidden="true">⛶</span>
+        </button>
+        <button id="next" class="icon-button" type="button" aria-label="Next slide" title="Next slide">
+          <span aria-hidden="true">›</span>
+        </button>
+      </nav>
+    </main>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
