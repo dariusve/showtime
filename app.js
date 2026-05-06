@@ -310,8 +310,10 @@ function updateSlideSize() {
   const availableHeight = stageEl.clientHeight - verticalPadding;
   const widthFromHeight = availableHeight * (16 / 9);
   const slideWidth = Math.max(280, Math.min(1180, availableWidth, widthFromHeight));
+  const slideScale = Math.max(0.42, Math.min(1, slideWidth / 1180));
 
   document.documentElement.style.setProperty("--computed-slide-width", `${slideWidth}px`);
+  document.documentElement.style.setProperty("--slide-scale", String(slideScale));
 }
 
 function renderSlideContent(slide) {
