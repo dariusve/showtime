@@ -55,6 +55,7 @@ input {
 }
 
 .slide {
+  position: relative;
   width: min(var(--slide-max), 100%);
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -70,6 +71,47 @@ input {
     var(--surface);
   box-shadow: 0 28px 90px var(--shadow);
   outline: none;
+}
+
+.slide[data-background] {
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.56), rgba(0, 0, 0, 0.18)),
+    var(--slide-background-image),
+    var(--surface);
+  background-position: center;
+  background-size: cover;
+}
+
+.slide.is-entering[data-transition="fade"] {
+  animation: showtime-fade var(--transition-duration, 700ms) var(--transition-easing, ease-out) var(--transition-delay, 0ms) both;
+}
+
+.slide.is-entering[data-transition="slide"] {
+  animation: showtime-slide var(--transition-duration, 700ms) var(--transition-easing, ease-out) var(--transition-delay, 0ms) both;
+}
+
+.slide.is-entering[data-transition="zoom"] {
+  animation: showtime-zoom var(--transition-duration, 700ms) var(--transition-easing, ease-out) var(--transition-delay, 0ms) both;
+}
+
+@keyframes showtime-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes showtime-slide {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+@keyframes showtime-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.975);
+  }
 }
 
 .slide[data-layout="title"] {
@@ -91,10 +133,41 @@ input {
   padding: 0;
 }
 
-.slide[data-layout="image"] img:first-child {
+.image-frame {
   width: 100%;
   height: 100%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  margin: 0;
+  background: #050606;
+}
+
+.image-frame img,
+.slide[data-layout="image"] > p:has(img) {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.image-frame img,
+.slide[data-layout="image"] > p > img:only-child {
   object-fit: cover;
+  border-radius: 0;
+  max-width: none;
+  max-height: none;
+}
+
+.slide[data-fit="contain"] .image-frame img,
+.slide[data-fit="contain"][data-layout="image"] > p > img:only-child {
+  object-fit: contain;
+}
+
+.image-frame figcaption {
+  padding: 14px 20px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.35;
+  background: color-mix(in srgb, var(--surface-strong) 92%, transparent);
 }
 
 .slide h1,
@@ -225,10 +298,174 @@ input {
   display: block;
 }
 
+.thumbnails {
+  position: fixed;
+  right: 0;
+  bottom: 64px;
+  left: 0;
+  display: none;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 12px 18px;
+  border-top: 1px solid var(--rule);
+  background: rgba(17, 19, 18, 0.9);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 -18px 50px var(--shadow);
+  z-index: 4;
+}
+
+.thumbnails.is-visible {
+  display: flex;
+}
+
+.thumbnail {
+  position: relative;
+  flex: 0 0 168px;
+  width: 168px;
+  height: 100px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.thumbnail.is-current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.thumbnail-preview {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  padding: 10px;
+  text-align: left;
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.05), transparent 38%),
+    var(--surface);
+  pointer-events: none;
+}
+
+.thumbnail-preview[data-background] {
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.64), rgba(0, 0, 0, 0.22)),
+    var(--slide-background-image),
+    var(--surface);
+  background-position: center;
+  background-size: cover;
+}
+
+.thumbnail-preview[data-layout="center"] {
+  align-items: center;
+  text-align: center;
+}
+
+.thumbnail-preview[data-layout="image"] {
+  padding: 0;
+}
+
+.thumbnail-preview[data-layout="split"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(36px, 0.85fr);
+  align-items: center;
+}
+
+.thumbnail-preview h1,
+.thumbnail-preview h2,
+.thumbnail-preview h3,
+.thumbnail-preview p,
+.thumbnail-preview li,
+.thumbnail-preview blockquote,
+.thumbnail-preview code,
+.thumbnail-preview table {
+  font-size: 8px;
+  line-height: 1.15;
+}
+
+.thumbnail-preview h1,
+.thumbnail-preview h2,
+.thumbnail-preview h3,
+.thumbnail-preview p,
+.thumbnail-preview ul,
+.thumbnail-preview ol,
+.thumbnail-preview blockquote,
+.thumbnail-preview pre,
+.thumbnail-preview figure {
+  margin: 0;
+}
+
+.thumbnail-preview h1,
+.thumbnail-preview h2,
+.thumbnail-preview h3 {
+  max-width: 14ch;
+  font-family: var(--font-heading);
+  color: var(--text);
+}
+
+.thumbnail-preview ul,
+.thumbnail-preview ol {
+  display: grid;
+  gap: 3px;
+  padding-left: 1.1em;
+}
+
+.thumbnail-preview pre {
+  max-height: 78px;
+  padding: 6px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.thumbnail-preview img,
+.thumbnail-preview video {
+  max-width: 100%;
+  max-height: 76px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.thumbnail-preview .image-frame {
+  height: 100%;
+}
+
+.thumbnail-preview .image-frame figcaption {
+  display: none;
+}
+
+.thumbnail-preview[data-layout="image"] .image-frame img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+}
+
+.thumbnail-preview[data-fit="contain"][data-layout="image"] .image-frame img {
+  object-fit: contain;
+}
+
+.thumbnail-label {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  min-width: 22px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-strong) 90%, transparent);
+  color: var(--text);
+  font-size: 0.72rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
 .controls {
   min-height: 64px;
   display: grid;
-  grid-template-columns: auto minmax(160px, 320px) auto minmax(72px, 1fr) repeat(4, auto);
+  grid-template-columns: auto minmax(160px, 320px) auto minmax(72px, 1fr) repeat(5, auto);
   gap: 10px;
   align-items: center;
   padding: 10px 18px;
@@ -308,6 +545,20 @@ body.is-presenting .controls:focus-within {
   opacity: 1;
 }
 
+body.is-presenting .thumbnails {
+  bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide.is-entering[data-transition] {
+    animation: none;
+  }
+
+  body.is-presenting .controls {
+    transition: none;
+  }
+}
+
 @media (max-width: 860px) {
   .stage {
     padding: 16px;
@@ -323,7 +574,13 @@ body.is-presenting .controls:focus-within {
   }
 
   .controls {
-    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto auto;
+  }
+
+  .thumbnail {
+    flex-basis: 132px;
+    width: 132px;
+    height: 78px;
   }
 
   .deck-picker,

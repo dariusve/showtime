@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Markdown to slides diagram</title>
+  <desc id="desc">A layered visual diagram showing Markdown files becoming rendered slides.</desc>
+  <rect width="1200" height="675" fill="#111312"/>
+  <path d="M0 0h1200v675H0z" fill="url(#bg)"/>
+  <g opacity=".26">
+    <circle cx="1010" cy="122" r="210" fill="#509b8b"/>
+    <circle cx="205" cy="580" r="250" fill="#e2b455"/>
+  </g>
+  <g transform="translate(112 128)">
+    <rect width="300" height="420" rx="8" fill="#fbf8f0"/>
+    <rect x="36" y="48" width="150" height="20" rx="4" fill="#1f7a68"/>
+    <rect x="36" y="96" width="220" height="14" rx="4" fill="#1e2420" opacity=".72"/>
+    <rect x="36" y="128" width="180" height="14" rx="4" fill="#1e2420" opacity=".52"/>
+    <rect x="36" y="188" width="96" height="14" rx="4" fill="#e2b455"/>
+    <rect x="36" y="224" width="228" height="14" rx="4" fill="#1e2420" opacity=".46"/>
+    <rect x="36" y="256" width="206" height="14" rx="4" fill="#1e2420" opacity=".46"/>
+    <rect x="36" y="288" width="186" height="14" rx="4" fill="#1e2420" opacity=".46"/>
+    <text x="36" y="372" fill="#606c62" font-family="ui-monospace, monospace" font-size="24">deck.md</text>
+  </g>
+  <path d="M470 338h168" fill="none" stroke="#e2b455" stroke-width="14" stroke-linecap="round"/>
+  <path d="m626 298 58 40-58 40" fill="none" stroke="#e2b455" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(740 102)">
+    <rect width="344" height="210" rx="8" fill="#252c29" stroke="#f4f1e8" stroke-opacity=".16"/>
+    <rect x="32" y="38" width="180" height="22" rx="4" fill="#e2b455"/>
+    <rect x="32" y="88" width="250" height="16" rx="4" fill="#f4f1e8" opacity=".82"/>
+    <rect x="32" y="122" width="210" height="16" rx="4" fill="#f4f1e8" opacity=".54"/>
+  </g>
+  <g transform="translate(688 344)">
+    <rect width="344" height="210" rx="8" fill="#fbf8f0" stroke="#111312" stroke-opacity=".1"/>
+    <rect x="32" y="34" width="280" height="112" rx="6" fill="#1f7a68"/>
+    <circle cx="86" cy="90" r="34" fill="#e2b455"/>
+    <path d="m140 146 66-64 48 42 28-26 30 48z" fill="#f4f1e8" opacity=".88"/>
+    <rect x="32" y="168" width="202" height="14" rx="4" fill="#1e2420" opacity=".55"/>
+  </g>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1200" y1="0" y2="675" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111312"/>
+      <stop offset=".55" stop-color="#1c211f"/>
+      <stop offset="1" stop-color="#192722"/>
+    </linearGradient>
+  </defs>
+</svg>
