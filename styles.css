@@ -520,6 +520,16 @@ button:hover {
   display: grid;
   place-items: center;
   font-size: 1.5rem;
+  line-height: 1;
+}
+
+.icon-button span {
+  display: grid;
+  width: 1em;
+  height: 1em;
+  place-items: center;
+  line-height: 1;
+  transform: translateY(-0.02em);
 }
 
 .progress {
