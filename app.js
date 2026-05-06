@@ -1,4 +1,5 @@
 const slideEl = document.querySelector("#slide");
+const stageEl = document.querySelector(".stage");
 const notesEl = document.querySelector("#notes");
 const progressEl = document.querySelector("#progress");
 const deckInput = document.querySelector("#deck-input");
@@ -264,6 +265,8 @@ async function loadDeck(path) {
 }
 
 function renderSlide() {
+  updateSlideSize();
+
   const slide = state.deck[state.current];
   if (!slide) {
     slideEl.dataset.layout = "center";
@@ -297,6 +300,18 @@ function renderSlide() {
   progressEl.value = `${state.current + 1} / ${state.deck.length}`;
   updateThumbnails();
   location.hash = String(state.current + 1);
+}
+
+function updateSlideSize() {
+  const stageStyles = getComputedStyle(stageEl);
+  const horizontalPadding = parseFloat(stageStyles.paddingLeft) + parseFloat(stageStyles.paddingRight);
+  const verticalPadding = parseFloat(stageStyles.paddingTop) + parseFloat(stageStyles.paddingBottom);
+  const availableWidth = stageEl.clientWidth - horizontalPadding;
+  const availableHeight = stageEl.clientHeight - verticalPadding;
+  const widthFromHeight = availableHeight * (16 / 9);
+  const slideWidth = Math.max(280, Math.min(1180, availableWidth, widthFromHeight));
+
+  document.documentElement.style.setProperty("--computed-slide-width", `${slideWidth}px`);
 }
 
 function renderSlideContent(slide) {
@@ -473,7 +488,9 @@ deckInput.addEventListener("keydown", (event) => {
 document.addEventListener("keydown", handleKeydown);
 document.addEventListener("fullscreenchange", () => {
   document.body.classList.toggle("is-presenting", Boolean(document.fullscreenElement));
+  updateSlideSize();
 });
+window.addEventListener("resize", updateSlideSize);
 
 function showError(error) {
   slideEl.dataset.layout = "center";
