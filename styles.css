@@ -519,17 +519,19 @@ button:hover {
   padding: 0;
   display: grid;
   place-items: center;
-  font-size: 1.5rem;
   line-height: 1;
 }
 
-.icon-button span {
-  display: grid;
-  width: 1em;
-  height: 1em;
-  place-items: center;
-  line-height: 1;
-  transform: translateY(-0.02em);
+.icon-button svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .progress {

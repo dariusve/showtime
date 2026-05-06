@@ -18,7 +18,9 @@
 
       <nav class="controls" aria-label="Presentation controls">
         <button id="prev" class="icon-button" type="button" aria-label="Previous slide" title="Previous slide">
-          <span aria-hidden="true">‹</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
         </button>
         <label class="deck-picker" for="deck-input">
           <span>Deck</span>
@@ -27,19 +29,32 @@
         <button id="load-deck" type="button">Load</button>
         <output id="progress" class="progress" aria-label="Slide progress"></output>
         <button id="notes-toggle" class="icon-button" type="button" aria-label="Toggle speaker notes" title="Toggle speaker notes">
-          <span aria-hidden="true">≡</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>
+          </svg>
         </button>
         <button id="thumbs-toggle" class="icon-button" type="button" aria-label="Toggle slide thumbnails" aria-pressed="false" title="Toggle slide thumbnails">
-          <span aria-hidden="true">▦</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="7" height="6" rx="1"/>
+            <rect x="14" y="4" width="7" height="6" rx="1"/>
+            <rect x="3" y="14" width="7" height="6" rx="1"/>
+            <rect x="14" y="14" width="7" height="6" rx="1"/>
+          </svg>
         </button>
         <button id="theme-toggle" class="icon-button" type="button" aria-label="Toggle theme" title="Toggle theme">
-          <span aria-hidden="true">◐</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+          </svg>
         </button>
         <button id="fullscreen" class="icon-button" type="button" aria-label="Enter fullscreen" title="Enter fullscreen">
-          <span aria-hidden="true">⛶</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>
+          </svg>
         </button>
         <button id="next" class="icon-button" type="button" aria-label="Next slide" title="Next slide">
-          <span aria-hidden="true">›</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
         </button>
       </nav>
     </main>
