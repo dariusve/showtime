@@ -556,15 +556,34 @@ button:hover {
 
 body[data-theme="paper"] {
   color-scheme: light;
-  --background: #ece7dc;
-  --surface: #fbf8f0;
-  --surface-strong: #fffdf8;
-  --text: #1e2420;
-  --muted: #606c62;
-  --accent: #1f7a68;
+  --background: #eef0e8;
+  --surface: #fbfaf4;
+  --surface-strong: #f5f2e8;
+  --text: #2b312d;
+  --muted: #667269;
+  --accent: #4f7f72;
   --accent-contrast: #ffffff;
-  --rule: rgba(30, 36, 32, 0.16);
-  --shadow: rgba(55, 49, 40, 0.18);
+  --rule: rgba(65, 76, 69, 0.14);
+  --shadow: rgba(68, 74, 63, 0.14);
+}
+
+body[data-theme="paper"] .controls,
+body[data-theme="paper"] .thumbnails {
+  background: rgba(244, 242, 233, 0.9);
+}
+
+body[data-theme="paper"] .slide {
+  background:
+    linear-gradient(140deg, rgba(79, 127, 114, 0.06), transparent 38%),
+    var(--surface);
+}
+
+body[data-theme="paper"] .slide pre {
+  background: rgba(74, 82, 74, 0.08);
+}
+
+body[data-theme="paper"] .slide :not(pre) > code {
+  background: rgba(79, 127, 114, 0.12);
 }
 
 body.is-presenting .controls {
