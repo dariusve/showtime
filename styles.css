@@ -135,6 +135,31 @@ input {
   align-items: center;
 }
 
+.slide[data-layout="columns"] {
+  justify-content: center;
+}
+
+.columns-content {
+  width: 100%;
+  column-count: var(--columns-count, 2);
+  column-gap: clamp(28px, calc(56px * var(--slide-scale, 1)), 56px);
+}
+
+.columns-content > :not(ul, ol) {
+  break-inside: avoid;
+}
+
+.columns-content ul,
+.columns-content ol {
+  display: block;
+  break-inside: auto;
+}
+
+.columns-content li {
+  break-inside: avoid;
+  margin-bottom: clamp(8px, calc(14px * var(--slide-scale, 1)), 14px);
+}
+
 .slide[data-layout="image"] {
   padding: 0;
 }
@@ -210,6 +235,59 @@ input {
   margin: 0;
 }
 
+.text-block {
+  display: grid;
+  gap: clamp(8px, calc(16px * var(--slide-scale, 1)), 16px);
+  max-width: 68ch;
+}
+
+.text-block > * {
+  max-width: 100%;
+}
+
+.text-small p,
+.text-small li,
+.text-small blockquote,
+.text-small table {
+  font-size: 0.72em;
+}
+
+.text-medium p,
+.text-medium li,
+.text-medium blockquote,
+.text-medium table {
+  font-size: 0.92em;
+}
+
+.text-large p,
+.text-large li,
+.text-large blockquote,
+.text-large table {
+  font-size: 1.16em;
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.text-compact {
+  gap: clamp(4px, calc(8px * var(--slide-scale, 1)), 8px);
+}
+
+.text-compact ul,
+.text-compact ol {
+  gap: 0.24em;
+}
+
+.slide-subtitle {
+  max-width: 68ch;
+  color: var(--muted);
+}
+
+.slide-subtitle p {
+  font-size: clamp(1.05rem, calc(1.72rem * var(--slide-scale, 1)), 1.72rem);
+}
+
 .slide strong,
 .slide a {
   color: var(--accent);
@@ -223,7 +301,7 @@ input {
 .slide ul,
 .slide ol {
   display: grid;
-  gap: clamp(8px, calc(16px * var(--slide-scale, 1)), 16px);
+  gap: 0.48em;
   margin: 0;
   padding-left: 1.35em;
 }
@@ -378,6 +456,10 @@ input {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(36px, 0.85fr);
   align-items: center;
+}
+
+.thumbnail-preview[data-layout="columns"] .columns-content {
+  column-gap: 8px;
 }
 
 .thumbnail-preview h1,
@@ -624,6 +706,10 @@ body.is-presenting .thumbnails {
 
   .slide[data-layout="split"] {
     display: flex;
+  }
+
+  .columns-content {
+    column-count: 1;
   }
 
   .controls {

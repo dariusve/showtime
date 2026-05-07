@@ -66,7 +66,9 @@ Slide frontmatter supports:
 - `layout: title`
 - `layout: center`
 - `layout: split`
+- `layout: columns`
 - `layout: image`
+- `columns: 2`
 - `image: assets/photo.jpg`
 - `imageAlt: Description of the image`
 - `caption: Optional image caption`
@@ -76,6 +78,57 @@ Slide frontmatter supports:
 - `transitionDuration: 1s`
 - `transitionEasing: ease-out`
 - `transitionDelay: 120ms`
+
+## Columns
+
+For a column slide, put the title first, then an optional subtitle paragraph, then the content to flow into columns:
+
+```md
+---
+layout: columns
+columns: 2
+
+## Speaker Bio
+
+Senior Software Engineer with 30 years of experience.
+
+### Fields
+
+- Retail
+- Inventory systems
+- Health
+- Support
+```
+
+## Text Blocks
+
+Wrap content in a styled block to adjust one section:
+
+```md
+::: small
+This paragraph is smaller.
+
+- Compact supporting point
+- Another supporting point
+:::
+```
+
+Available block styles:
+
+- `small`
+- `medium`
+- `large`
+- `muted`
+- `compact`
+
+Styles can be combined:
+
+```md
+::: small muted compact
+- Secondary detail
+- Another detail
+:::
+```
 
 ## Transitions
 

@@ -135,6 +135,19 @@ function renderMarkdown(markdown) {
       continue;
     }
 
+    if (/^:::\s*[\w -]+$/.test(line)) {
+      const className = getBlockClassName(line.replace(/^:::\s*/, ""));
+      const content = [];
+      index += 1;
+      while (index < lines.length && lines[index].trim() !== ":::") {
+        content.push(lines[index]);
+        index += 1;
+      }
+      index += 1;
+      blocks.push(`<div class="${className}">${renderMarkdown(content.join("\n"))}</div>`);
+      continue;
+    }
+
     if (line.startsWith("```")) {
       const language = escapeHtml(line.slice(3).trim());
       const code = [];
@@ -166,7 +179,7 @@ function renderMarkdown(markdown) {
       continue;
     }
 
-    if (/^\|.*\|$/.test(line) && index + 1 < lines.length && /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(lines[index + 1])) {
+    if (/^\|.*\|$/.test(line)) {
       const table = [];
       while (index < lines.length && /^\|.*\|$/.test(lines[index])) {
         table.push(lines[index]);
@@ -194,14 +207,31 @@ function renderMarkdown(markdown) {
       paragraph.push(lines[index]);
       index += 1;
     }
-    blocks.push(`<p>${renderInline(paragraph.join(" "))}</p>`);
+    if (paragraph.length > 0) {
+      blocks.push(`<p>${renderInline(paragraph.join(" "))}</p>`);
+      continue;
+    }
+
+    blocks.push(`<p>${renderInline(line.trim())}</p>`);
+    index += 1;
   }
 
   return blocks.join("\n");
 }
 
 function isBlockStart(line) {
-  return /^(```|#{1,6}\s|>\s?|(\s*)[-*+]\s+|\s*\d+\.\s+|\|.*\|$)/.test(line);
+  return /^(:::\s*[\w -]+|```|#{1,6}\s|>\s?|(\s*)[-*+]\s+|\s*\d+\.\s+|\|.*\|$)/.test(line);
+}
+
+function getBlockClassName(value) {
+  const allowed = new Set(["small", "medium", "large", "muted", "compact"]);
+  const classes = value
+    .split(/\s+/)
+    .map((item) => item.trim().toLowerCase())
+    .filter((item) => allowed.has(item))
+    .map((item) => `text-${item}`);
+
+  return ["text-block", ...classes].join(" ");
 }
 
 function renderInline(value) {
@@ -215,12 +245,22 @@ function renderInline(value) {
 }
 
 function renderTable(rows) {
-  const [head, , ...body] = rows;
-  const headerCells = splitTableRow(head).map((cell) => `<th>${renderInline(cell)}</th>`).join("");
+  const hasHeader = rows.length > 1 && isTableSeparator(rows[1]);
+  const startsWithSeparator = isTableSeparator(rows[0]);
+  const head = hasHeader ? rows[0] : "";
+  const body = hasHeader ? rows.slice(2) : rows.slice(startsWithSeparator ? 1 : 0);
+  const columnCount = Math.max(...rows.map((row) => splitTableRow(row).length), 1);
+  const headerCells = (head ? splitTableRow(head) : Array.from({ length: columnCount }, () => ""))
+    .map((cell) => `<th>${renderInline(cell)}</th>`)
+    .join("");
   const bodyRows = body
     .map((row) => `<tr>${splitTableRow(row).map((cell) => `<td>${renderInline(cell)}</td>`).join("")}</tr>`)
     .join("");
   return `<table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
+}
+
+function isTableSeparator(row) {
+  return /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(row);
 }
 
 function splitTableRow(row) {
@@ -283,6 +323,7 @@ function renderSlide() {
 
   slideEl.dataset.layout = slide.meta.layout || "default";
   slideEl.dataset.fit = getImageFit(slide.meta.fit);
+  slideEl.style.setProperty("--columns-count", getColumnCount(slide.meta.columns));
   slideEl.dataset.transition = getTransition(slide.meta.transition || state.transition);
   slideEl.style.setProperty("--transition-duration", getCssTime(slide.meta.transitionDuration, state.transitionDuration));
   slideEl.style.setProperty("--transition-easing", getTransitionEasing(slide.meta.transitionEasing, state.transitionEasing));
@@ -324,7 +365,32 @@ function renderSlideContent(slide) {
     return `<figure class="image-frame"><img src="${src}" alt="${alt}">${caption}</figure>`;
   }
 
+  if (slide.meta.layout === "columns") {
+    return renderColumnsSlide(slide);
+  }
+
   return slide.html;
+}
+
+function renderColumnsSlide(slide) {
+  const match = slide.html.match(/^(<h[1-3]>.*?<\/h[1-3]>)([\s\S]*)$/);
+  if (!match) {
+    return `<div class="columns-content">${slide.html}</div>`;
+  }
+
+  const [, heading, content] = match;
+  const subtitleMatch = content.trim().match(/^(<p>.*?<\/p>)([\s\S]*)$/);
+  if (!subtitleMatch) {
+    return `${heading}<div class="columns-content">${content.trim()}</div>`;
+  }
+
+  const [, subtitle, columns] = subtitleMatch;
+  return `${heading}<div class="slide-subtitle">${subtitle}</div><div class="columns-content">${columns.trim()}</div>`;
+}
+
+function getColumnCount(value) {
+  const count = Number(value || 2);
+  return String(Math.max(2, Math.min(count, 4)));
 }
 
 function getImageFit(value) {
