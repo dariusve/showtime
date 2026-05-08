@@ -10,7 +10,10 @@ const notesButton = document.querySelector("#notes-toggle");
 const thumbsButton = document.querySelector("#thumbs-toggle");
 const themeButton = document.querySelector("#theme-toggle");
 const fullscreenButton = document.querySelector("#fullscreen");
+const thumbnailTrayEl = document.querySelector("#thumbnail-tray");
 const thumbnailsEl = document.querySelector("#thumbnails");
+const thumbnailsScrollLeftButton = document.querySelector("#thumbs-scroll-left");
+const thumbnailsScrollRightButton = document.querySelector("#thumbs-scroll-right");
 
 const state = {
   deck: [],
@@ -73,8 +76,7 @@ function parseFrontmatterValue(value) {
 
 function parseSlides(markdown) {
   const [deckMeta, body] = parseFrontmatter(markdown);
-  const chunks = body
-    .split(/(?:^|\n)---+\s*(?:\n|$)/g)
+  const chunks = splitSlides(body)
     .map((chunk) => chunk.trim())
     .filter(Boolean);
 
@@ -82,7 +84,7 @@ function parseSlides(markdown) {
     meta: deckMeta,
     slides: chunks.map((chunk) => {
       const [meta, content] = parseSlideMeta(chunk);
-      const [visible, notes = ""] = content.split(/\n\?\?\?\n/);
+      const [visible, notes = ""] = splitSpeakerNotes(content);
       return {
         meta,
         html: renderMarkdown(visible.trim()),
@@ -90,6 +92,53 @@ function parseSlides(markdown) {
       };
     }),
   };
+}
+
+function splitSlides(markdown) {
+  const slides = [];
+  const current = [];
+  let inCodeBlock = false;
+
+  for (const line of markdown.split("\n")) {
+    if (/^\s*```/.test(line)) {
+      inCodeBlock = !inCodeBlock;
+      current.push(line);
+      continue;
+    }
+
+    if (!inCodeBlock && /^---+\s*$/.test(line)) {
+      slides.push(current.join("\n"));
+      current.length = 0;
+      continue;
+    }
+
+    current.push(line);
+  }
+
+  slides.push(current.join("\n"));
+  return slides;
+}
+
+function splitSpeakerNotes(markdown) {
+  const visible = [];
+  const notes = [];
+  let inCodeBlock = false;
+  let inNotes = false;
+
+  for (const line of markdown.split("\n")) {
+    if (/^\s*```/.test(line)) {
+      inCodeBlock = !inCodeBlock;
+    }
+
+    if (!inCodeBlock && line.trim() === "???") {
+      inNotes = true;
+      continue;
+    }
+
+    (inNotes ? notes : visible).push(line);
+  }
+
+  return [visible.join("\n"), notes.join("\n")];
 }
 
 function parseSlideMeta(markdown) {
@@ -208,7 +257,7 @@ function renderMarkdown(markdown) {
       index += 1;
     }
     if (paragraph.length > 0) {
-      blocks.push(`<p>${renderInline(paragraph.join(" "))}</p>`);
+      blocks.push(`<p>${renderParagraph(paragraph)}</p>`);
       continue;
     }
 
@@ -217,6 +266,16 @@ function renderMarkdown(markdown) {
   }
 
   return blocks.join("\n");
+}
+
+function renderParagraph(lines) {
+  return lines
+    .map((line) => {
+      const hasHardBreak = /\s{2,}$/.test(line);
+      const text = renderInline(line.trim());
+      return hasHardBreak ? `${text}<br>` : text;
+    })
+    .join(" ");
 }
 
 function isBlockStart(line) {
@@ -347,13 +406,15 @@ function updateSlideSize() {
   const stageStyles = getComputedStyle(stageEl);
   const horizontalPadding = parseFloat(stageStyles.paddingLeft) + parseFloat(stageStyles.paddingRight);
   const verticalPadding = parseFloat(stageStyles.paddingTop) + parseFloat(stageStyles.paddingBottom);
-  const availableWidth = stageEl.clientWidth - horizontalPadding;
-  const availableHeight = stageEl.clientHeight - verticalPadding;
+  const availableWidth = Math.max(0, stageEl.clientWidth - horizontalPadding);
+  const availableHeight = Math.max(0, stageEl.clientHeight - verticalPadding);
   const widthFromHeight = availableHeight * (16 / 9);
-  const slideWidth = Math.max(280, Math.min(1180, availableWidth, widthFromHeight));
-  const slideScale = Math.max(0.42, Math.min(1, slideWidth / 1180));
+  const slideWidth = Math.max(280, Math.min(availableWidth, widthFromHeight));
+  const slideHeight = slideWidth * (9 / 16);
+  const slideScale = Math.max(0.42, Math.min(2.25, slideWidth / 1180));
 
   document.documentElement.style.setProperty("--computed-slide-width", `${slideWidth}px`);
+  document.documentElement.style.setProperty("--computed-slide-height", `${slideHeight}px`);
   document.documentElement.style.setProperty("--slide-scale", String(slideScale));
 }
 
@@ -369,6 +430,10 @@ function renderSlideContent(slide) {
     return renderColumnsSlide(slide);
   }
 
+  if (slide.meta.layout === "compare") {
+    return renderCompareSlide(slide);
+  }
+
   return slide.html;
 }
 
@@ -381,11 +446,52 @@ function renderColumnsSlide(slide) {
   const [, heading, content] = match;
   const subtitleMatch = content.trim().match(/^(<p>.*?<\/p>)([\s\S]*)$/);
   if (!subtitleMatch) {
-    return `${heading}<div class="columns-content">${content.trim()}</div>`;
+    return `${heading}${renderColumnContent(content.trim())}`;
   }
 
   const [, subtitle, columns] = subtitleMatch;
-  return `${heading}<div class="slide-subtitle">${subtitle}</div><div class="columns-content">${columns.trim()}</div>`;
+  return `${heading}<div class="slide-subtitle">${subtitle}</div>${renderColumnContent(columns.trim())}`;
+}
+
+function renderColumnContent(content) {
+  const groups = [];
+  const pattern = /<h3>(.*?)<\/h3>\s*([\s\S]*?)(?=<h3>|$)/g;
+  let groupMatch;
+
+  while ((groupMatch = pattern.exec(content)) !== null) {
+    groups.push(`<section class="column-group"><h3>${groupMatch[1]}</h3>${groupMatch[2].trim()}</section>`);
+  }
+
+  if (groups.length === 0) {
+    return `<div class="columns-content">${content}</div>`;
+  }
+
+  return `<div class="columns-content columns-groups">${groups.join("")}</div>`;
+}
+
+function renderCompareSlide(slide) {
+  const match = slide.html.match(/^(<h[1-3]>.*?<\/h[1-3]>)([\s\S]*)$/);
+  if (!match) {
+    return `<div class="compare-content">${slide.html}</div>`;
+  }
+
+  const [, heading, content] = match;
+  const groups = [];
+  const pattern = /<p><strong>(.*?)<\/strong><\/p>\s*(<ul>[\s\S]*?<\/ul>|<ol>[\s\S]*?<\/ol>)/g;
+  let lastIndex = 0;
+  let groupMatch;
+
+  while ((groupMatch = pattern.exec(content)) !== null) {
+    lastIndex = pattern.lastIndex;
+    groups.push(`<section class="compare-group"><h3>${groupMatch[1]}</h3>${groupMatch[2]}</section>`);
+  }
+
+  const leftover = content.slice(lastIndex).trim();
+  if (groups.length === 0) {
+    return `${heading}<div class="compare-content">${content.trim()}</div>`;
+  }
+
+  return `${heading}<div class="compare-content">${groups.join("")}${leftover}</div>`;
 }
 
 function getColumnCount(value) {
@@ -457,13 +563,15 @@ function renderThumbnails() {
       const background = slide.meta.background ? " data-background" : "";
       return `
         <button class="thumbnail" type="button" data-index="${index}" aria-label="Go to slide ${index + 1}: ${escapeHtml(label)}">
-          <span
-            class="thumbnail-preview"
-            data-layout="${escapeHtml(String(slide.meta.layout || "default"))}"
-            data-fit="${escapeHtml(getImageFit(slide.meta.fit))}"
-            ${background}${style}
-          >
-            ${renderSlideContent(slide)}
+          <span class="thumbnail-preview" aria-hidden="true">
+            <span
+              class="thumbnail-slide slide"
+              data-layout="${escapeHtml(String(slide.meta.layout || "default"))}"
+              data-fit="${escapeHtml(getImageFit(slide.meta.fit))}"
+              ${background}${style}
+            >
+              ${renderSlideContent(slide)}
+            </span>
           </span>
           <span class="thumbnail-label">${index + 1}</span>
         </button>
@@ -482,11 +590,25 @@ function updateThumbnails() {
 
   const current = thumbnailsEl.querySelector(".thumbnail.is-current");
   current?.scrollIntoView({ block: "nearest", inline: "center" });
+  updateThumbnailScrollButtons();
 }
 
 function toggleThumbnails() {
-  const isVisible = thumbnailsEl.classList.toggle("is-visible");
+  const isVisible = thumbnailTrayEl.classList.toggle("is-visible");
   thumbsButton.setAttribute("aria-pressed", String(isVisible));
+  updateThumbnailScrollButtons();
+}
+
+function scrollThumbnails(direction) {
+  const distance = Math.max(thumbnailsEl.clientWidth * 0.72, 180);
+  thumbnailsEl.scrollBy({ left: direction * distance, behavior: "smooth" });
+}
+
+function updateThumbnailScrollButtons() {
+  const maxScroll = Math.max(0, thumbnailsEl.scrollWidth - thumbnailsEl.clientWidth);
+  const canScroll = thumbnailTrayEl.classList.contains("is-visible") && maxScroll > 1;
+  thumbnailsScrollLeftButton.disabled = !canScroll || thumbnailsEl.scrollLeft <= 1;
+  thumbnailsScrollRightButton.disabled = !canScroll || thumbnailsEl.scrollLeft >= maxScroll - 1;
 }
 
 function getSlideLabel(slide, index) {
@@ -540,8 +662,11 @@ previousButton.addEventListener("click", () => goToSlide(state.current - 1));
 nextButton.addEventListener("click", () => goToSlide(state.current + 1));
 notesButton.addEventListener("click", () => notesEl.classList.toggle("is-visible"));
 thumbsButton.addEventListener("click", toggleThumbnails);
+thumbnailsScrollLeftButton.addEventListener("click", () => scrollThumbnails(-1));
+thumbnailsScrollRightButton.addEventListener("click", () => scrollThumbnails(1));
 themeButton.addEventListener("click", toggleTheme);
 fullscreenButton.addEventListener("click", toggleFullscreen);
+thumbnailsEl.addEventListener("scroll", updateThumbnailScrollButtons);
 thumbnailsEl.addEventListener("click", (event) => {
   const thumbnail = event.target.closest(".thumbnail");
   if (!thumbnail) return;
@@ -558,7 +683,10 @@ document.addEventListener("fullscreenchange", () => {
   document.body.classList.toggle("is-presenting", Boolean(document.fullscreenElement));
   updateSlideSize();
 });
-window.addEventListener("resize", updateSlideSize);
+window.addEventListener("resize", () => {
+  updateSlideSize();
+  updateThumbnailScrollButtons();
+});
 
 function showError(error) {
   slideEl.dataset.layout = "center";

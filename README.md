@@ -67,6 +67,7 @@ Slide frontmatter supports:
 - `layout: center`
 - `layout: split`
 - `layout: columns`
+- `layout: compare`
 - `layout: image`
 - `columns: 2`
 - `image: assets/photo.jpg`
@@ -79,9 +80,17 @@ Slide frontmatter supports:
 - `transitionEasing: ease-out`
 - `transitionDelay: 120ms`
 
+## Responsive Slide Sizing
+
+Slides scale to the available presentation stage while preserving a 16:9 aspect ratio.
+
+Typography, spacing, padding, tables, code blocks, and text block modifiers are driven by the rendered slide size. This keeps slides readable on laptop screens and large auditorium displays.
+
+When changing slide formatting, update this README in the same change. New layouts, text block styles, responsive sizing rules, or Markdown conventions should be documented here with a short example.
+
 ## Columns
 
-For a column slide, put the title first, then an optional subtitle paragraph, then the content to flow into columns:
+For a column slide, put the title first, then an optional subtitle paragraph. If the content uses `###` headings, each heading and the content below it becomes a balanced presentation panel:
 
 ```md
 ---
@@ -98,7 +107,39 @@ Senior Software Engineer with 30 years of experience.
 - Inventory systems
 - Health
 - Support
+
+### Focus
+
+Build systems people can understand.
 ```
+
+Use `columns: 2`, `columns: 3`, or `columns: 4`. Dense teaching slides should prefer short bullets and `###` panel headings so content stays grouped instead of flowing like newspaper columns.
+
+## Compare Slides
+
+Use `layout: compare` for two-sided comparisons. The slide title spans the top, and each bold label followed by a list becomes a comparison panel:
+
+```md
+---
+layout: compare
+
+## China vs. el resto del mundo
+
+**Douyin (TikTok en China)**
+
+- Educación
+- Ciencias
+- Información
+
+**TikTok global**
+
+- Retos virales
+- Estafas
+- Crímenes
+- Ventas de productos
+```
+
+Keep compare slides to two groups. For auditorium projection, use concise labels and short list items.
 
 ## Text Blocks
 
@@ -121,6 +162,22 @@ Available block styles:
 - `muted`
 - `compact`
 
+Text block sizes are responsive, not fixed browser text sizes. `small` is still designed to be readable from the back of a room. `muted small` gets a slightly brighter muted color and a larger size so secondary notes remain legible on dark slides.
+
+Paragraphs follow Markdown hard-break behavior. A normal line break in the `.md` source is treated as a space. To force a visible line break, end the line with two spaces:
+
+```md
+::: muted
+This stays in one paragraph unless it must wrap.
+This source line continues the same paragraph.
+:::
+
+::: muted
+This line breaks here.  
+This line starts below it.
+:::
+```
+
 Styles can be combined:
 
 ```md
@@ -129,6 +186,19 @@ Styles can be combined:
 - Another detail
 :::
 ```
+
+## Code Blocks
+
+Use fenced code blocks for readable code slides:
+
+````md
+```js
+const slide = deck.slides[currentIndex];
+render(slide);
+```
+````
+
+Code fences can include `---` lines without splitting the deck into new slides.
 
 ## Transitions
 
