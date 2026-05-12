@@ -1,3 +1,13 @@
+import { escapeHtml, parseSlides } from "./src/markdown.js";
+import { getColumnCount, getImageFit, renderSlideContent } from "./src/slides.js";
+import { formatCssUrl, getCssTime, getTransition, getTransitionEasing } from "./src/transitions.js";
+import {
+  renderThumbnails as renderThumbnailList,
+  scrollThumbnails as scrollThumbnailList,
+  updateThumbnailScrollButtons,
+  updateThumbnails as updateThumbnailList,
+} from "./src/thumbnails.js";
+
 const slideEl = document.querySelector("#slide");
 const stageEl = document.querySelector(".stage");
 const notesEl = document.querySelector("#notes");
@@ -31,300 +41,12 @@ const builtInThemes = {
   paper: {},
 };
 
-function escapeHtml(value) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
-function parseFrontmatter(markdown) {
-  if (!markdown.startsWith("---\n")) {
-    return [{}, markdown];
-  }
-
-  const end = markdown.indexOf("\n---", 4);
-  if (end === -1) {
-    return [{}, markdown];
-  }
-
-  const raw = markdown.slice(4, end).trim();
-  const body = markdown.slice(end + 4).trimStart();
-  const data = {};
-
-  for (const line of raw.split("\n")) {
-    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (!match) continue;
-    const [, key, value] = match;
-    data[key] = parseFrontmatterValue(value);
-  }
-
-  return [data, body];
-}
-
-function parseFrontmatterValue(value) {
-  const trimmed = value.trim();
-  if (trimmed === "true") return true;
-  if (trimmed === "false") return false;
-  if (/^-?\d+(\.\d+)?$/.test(trimmed)) return Number(trimmed);
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    return trimmed.slice(1, -1);
-  }
-  return trimmed;
-}
-
-function parseSlides(markdown) {
-  const [deckMeta, body] = parseFrontmatter(markdown);
-  const chunks = splitSlides(body)
-    .map((chunk) => chunk.trim())
-    .filter(Boolean);
-
-  return {
-    meta: deckMeta,
-    slides: chunks.map((chunk) => {
-      const [meta, content] = parseSlideMeta(chunk);
-      const [visible, notes = ""] = splitSpeakerNotes(content);
-      return {
-        meta,
-        html: renderMarkdown(visible.trim()),
-        notes: renderMarkdown(notes.trim()),
-      };
-    }),
-  };
-}
-
-function splitSlides(markdown) {
-  const slides = [];
-  const current = [];
-  let inCodeBlock = false;
-
-  for (const line of markdown.split("\n")) {
-    if (/^\s*```/.test(line)) {
-      inCodeBlock = !inCodeBlock;
-      current.push(line);
-      continue;
-    }
-
-    if (!inCodeBlock && /^---+\s*$/.test(line)) {
-      slides.push(current.join("\n"));
-      current.length = 0;
-      continue;
-    }
-
-    current.push(line);
-  }
-
-  slides.push(current.join("\n"));
-  return slides;
-}
-
-function splitSpeakerNotes(markdown) {
-  const visible = [];
-  const notes = [];
-  let inCodeBlock = false;
-  let inNotes = false;
-
-  for (const line of markdown.split("\n")) {
-    if (/^\s*```/.test(line)) {
-      inCodeBlock = !inCodeBlock;
-    }
-
-    if (!inCodeBlock && line.trim() === "???") {
-      inNotes = true;
-      continue;
-    }
-
-    (inNotes ? notes : visible).push(line);
-  }
-
-  return [visible.join("\n"), notes.join("\n")];
-}
-
-function parseSlideMeta(markdown) {
-  const lines = markdown.split("\n");
-  const meta = {};
-  let index = 0;
-
-  while (index < lines.length) {
-    const line = lines[index];
-    if (!line.trim()) {
-      index += 1;
-      break;
-    }
-
-    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (!match) {
-      index = 0;
-      break;
-    }
-
-    const [, key, value] = match;
-    meta[normalizeMetaKey(key)] = parseFrontmatterValue(value);
-    index += 1;
-  }
-
-  return [meta, lines.slice(index).join("\n")];
-}
-
-function normalizeMetaKey(key) {
-  return key === "layaout" ? "layout" : key;
-}
-
-function renderMarkdown(markdown) {
-  const lines = markdown.split("\n");
-  const blocks = [];
-  let index = 0;
-
-  while (index < lines.length) {
-    const line = lines[index];
-
-    if (!line.trim()) {
-      index += 1;
-      continue;
-    }
-
-    if (/^:::\s*[\w -]+$/.test(line)) {
-      const className = getBlockClassName(line.replace(/^:::\s*/, ""));
-      const content = [];
-      index += 1;
-      while (index < lines.length && lines[index].trim() !== ":::") {
-        content.push(lines[index]);
-        index += 1;
-      }
-      index += 1;
-      blocks.push(`<div class="${className}">${renderMarkdown(content.join("\n"))}</div>`);
-      continue;
-    }
-
-    if (line.startsWith("```")) {
-      const language = escapeHtml(line.slice(3).trim());
-      const code = [];
-      index += 1;
-      while (index < lines.length && !lines[index].startsWith("```")) {
-        code.push(lines[index]);
-        index += 1;
-      }
-      index += 1;
-      blocks.push(`<pre><code class="language-${language}">${escapeHtml(code.join("\n"))}</code></pre>`);
-      continue;
-    }
-
-    if (/^#{1,6}\s/.test(line)) {
-      const [, hashes, text] = line.match(/^(#{1,6})\s+(.*)$/);
-      const level = Math.min(hashes.length, 3);
-      blocks.push(`<h${level}>${renderInline(text)}</h${level}>`);
-      index += 1;
-      continue;
-    }
-
-    if (/^>\s?/.test(line)) {
-      const quote = [];
-      while (index < lines.length && /^>\s?/.test(lines[index])) {
-        quote.push(lines[index].replace(/^>\s?/, ""));
-        index += 1;
-      }
-      blocks.push(`<blockquote>${renderInline(quote.join(" "))}</blockquote>`);
-      continue;
-    }
-
-    if (/^\|.*\|$/.test(line)) {
-      const table = [];
-      while (index < lines.length && /^\|.*\|$/.test(lines[index])) {
-        table.push(lines[index]);
-        index += 1;
-      }
-      blocks.push(renderTable(table));
-      continue;
-    }
-
-    if (/^(\s*)[-*+]\s+/.test(line) || /^\s*\d+\.\s+/.test(line)) {
-      const ordered = /^\s*\d+\.\s+/.test(line);
-      const items = [];
-      const pattern = ordered ? /^\s*\d+\.\s+(.*)$/ : /^\s*[-*+]\s+(.*)$/;
-      while (index < lines.length && pattern.test(lines[index])) {
-        items.push(lines[index].replace(pattern, "$1"));
-        index += 1;
-      }
-      const tag = ordered ? "ol" : "ul";
-      blocks.push(`<${tag}>${items.map((item) => `<li>${renderInline(item)}</li>`).join("")}</${tag}>`);
-      continue;
-    }
-
-    const paragraph = [];
-    while (index < lines.length && lines[index].trim() && !isBlockStart(lines[index])) {
-      paragraph.push(lines[index]);
-      index += 1;
-    }
-    if (paragraph.length > 0) {
-      blocks.push(`<p>${renderParagraph(paragraph)}</p>`);
-      continue;
-    }
-
-    blocks.push(`<p>${renderInline(line.trim())}</p>`);
-    index += 1;
-  }
-
-  return blocks.join("\n");
-}
-
-function renderParagraph(lines) {
-  return lines
-    .map((line) => {
-      const hasHardBreak = /\s{2,}$/.test(line);
-      const text = renderInline(line.trim());
-      return hasHardBreak ? `${text}<br>` : text;
-    })
-    .join(" ");
-}
-
-function isBlockStart(line) {
-  return /^(:::\s*[\w -]+|```|#{1,6}\s|>\s?|(\s*)[-*+]\s+|\s*\d+\.\s+|\|.*\|$)/.test(line);
-}
-
-function getBlockClassName(value) {
-  const allowed = new Set(["small", "medium", "large", "muted", "compact"]);
-  const classes = value
-    .split(/\s+/)
-    .map((item) => item.trim().toLowerCase())
-    .filter((item) => allowed.has(item))
-    .map((item) => `text-${item}`);
-
-  return ["text-block", ...classes].join(" ");
-}
-
-function renderInline(value) {
-  let html = escapeHtml(value);
-  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2">');
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
-  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-  html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-  return html;
-}
-
-function renderTable(rows) {
-  const hasHeader = rows.length > 1 && isTableSeparator(rows[1]);
-  const startsWithSeparator = isTableSeparator(rows[0]);
-  const head = hasHeader ? rows[0] : "";
-  const body = hasHeader ? rows.slice(2) : rows.slice(startsWithSeparator ? 1 : 0);
-  const columnCount = Math.max(...rows.map((row) => splitTableRow(row).length), 1);
-  const headerCells = (head ? splitTableRow(head) : Array.from({ length: columnCount }, () => ""))
-    .map((cell) => `<th>${renderInline(cell)}</th>`)
-    .join("");
-  const bodyRows = body
-    .map((row) => `<tr>${splitTableRow(row).map((cell) => `<td>${renderInline(cell)}</td>`).join("")}</tr>`)
-    .join("");
-  return `<table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
-}
-
-function isTableSeparator(row) {
-  return /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(row);
-}
-
-function splitTableRow(row) {
-  return row.replace(/^\||\|$/g, "").split("|").map((cell) => cell.trim());
-}
+const thumbnailControls = {
+  thumbnailsEl,
+  thumbnailTrayEl,
+  thumbnailsScrollLeftButton,
+  thumbnailsScrollRightButton,
+};
 
 function applyDeckMeta(meta) {
   state.title = meta.title || "Showtime";
@@ -418,124 +140,6 @@ function updateSlideSize() {
   document.documentElement.style.setProperty("--slide-scale", String(slideScale));
 }
 
-function renderSlideContent(slide) {
-  if (slide.meta.layout === "image" && slide.meta.image) {
-    const alt = escapeHtml(String(slide.meta.imageAlt || slide.meta.caption || ""));
-    const src = escapeHtml(String(slide.meta.image));
-    const caption = slide.meta.caption ? `<figcaption>${renderInline(String(slide.meta.caption))}</figcaption>` : "";
-    return `<figure class="image-frame"><img src="${src}" alt="${alt}">${caption}</figure>`;
-  }
-
-  if (slide.meta.layout === "columns") {
-    return renderColumnsSlide(slide);
-  }
-
-  if (slide.meta.layout === "compare") {
-    return renderCompareSlide(slide);
-  }
-
-  return slide.html;
-}
-
-function renderColumnsSlide(slide) {
-  const match = slide.html.match(/^(<h[1-3]>.*?<\/h[1-3]>)([\s\S]*)$/);
-  if (!match) {
-    return `<div class="columns-content">${slide.html}</div>`;
-  }
-
-  const [, heading, content] = match;
-  const subtitleMatch = content.trim().match(/^(<p>.*?<\/p>)([\s\S]*)$/);
-  if (!subtitleMatch) {
-    return `${heading}${renderColumnContent(content.trim())}`;
-  }
-
-  const [, subtitle, columns] = subtitleMatch;
-  return `${heading}<div class="slide-subtitle">${subtitle}</div>${renderColumnContent(columns.trim())}`;
-}
-
-function renderColumnContent(content) {
-  const groups = [];
-  const pattern = /<h3>(.*?)<\/h3>\s*([\s\S]*?)(?=<h3>|$)/g;
-  let groupMatch;
-
-  while ((groupMatch = pattern.exec(content)) !== null) {
-    groups.push(`<section class="column-group"><h3>${groupMatch[1]}</h3>${groupMatch[2].trim()}</section>`);
-  }
-
-  if (groups.length === 0) {
-    return `<div class="columns-content">${content}</div>`;
-  }
-
-  return `<div class="columns-content columns-groups">${groups.join("")}</div>`;
-}
-
-function renderCompareSlide(slide) {
-  const match = slide.html.match(/^(<h[1-3]>.*?<\/h[1-3]>)([\s\S]*)$/);
-  if (!match) {
-    return `<div class="compare-content">${slide.html}</div>`;
-  }
-
-  const [, heading, content] = match;
-  const groups = [];
-  const pattern = /<p><strong>(.*?)<\/strong><\/p>\s*(<ul>[\s\S]*?<\/ul>|<ol>[\s\S]*?<\/ol>)/g;
-  let lastIndex = 0;
-  let groupMatch;
-
-  while ((groupMatch = pattern.exec(content)) !== null) {
-    lastIndex = pattern.lastIndex;
-    groups.push(`<section class="compare-group"><h3>${groupMatch[1]}</h3>${groupMatch[2]}</section>`);
-  }
-
-  const leftover = content.slice(lastIndex).trim();
-  if (groups.length === 0) {
-    return `${heading}<div class="compare-content">${content.trim()}</div>`;
-  }
-
-  return `${heading}<div class="compare-content">${groups.join("")}${leftover}</div>`;
-}
-
-function getColumnCount(value) {
-  const count = Number(value || 2);
-  return String(Math.max(2, Math.min(count, 4)));
-}
-
-function getImageFit(value) {
-  return value === "cover" || value === "contain" ? value : "contain";
-}
-
-function getTransition(value) {
-  const transition = String(value || "fade").toLowerCase();
-  return ["fade", "slide", "zoom", "none"].includes(transition) ? transition : "fade";
-}
-
-function getCssTime(value, fallback) {
-  if (value === undefined || value === null || value === "") return fallback;
-
-  const time = String(value).trim();
-  if (/^\d+(\.\d+)?m?s$/.test(time)) return time;
-  if (/^\d+(\.\d+)?$/.test(time)) return `${time}ms`;
-  return fallback;
-}
-
-function getTransitionEasing(value, fallback) {
-  if (value === undefined || value === null || value === "") return fallback;
-
-  const easing = String(value).trim();
-  const named = {
-    linear: "linear",
-    ease: "ease",
-    "ease-in": "ease-in",
-    "ease-out": "ease-out",
-    "ease-in-out": "ease-in-out",
-    smooth: "cubic-bezier(0.2, 0.78, 0.2, 1)",
-    snappy: "cubic-bezier(0.16, 1, 0.3, 1)",
-  };
-
-  if (named[easing]) return named[easing];
-  if (/^cubic-bezier\([^)]+\)$/.test(easing)) return easing;
-  return fallback;
-}
-
 function animateSlide() {
   slideEl.classList.remove("is-entering");
 
@@ -548,73 +152,26 @@ function animateSlide() {
   });
 }
 
-function formatCssUrl(value) {
-  const url = String(value).replaceAll("\\", "\\\\").replaceAll('"', '\\"');
-  return `url("${url}")`;
-}
-
 function renderThumbnails() {
-  thumbnailsEl.innerHTML = state.deck
-    .map((slide, index) => {
-      const label = getSlideLabel(slide, index);
-      const style = slide.meta.background
-        ? ` style="--slide-background-image: ${formatCssUrl(slide.meta.background)}"`
-        : "";
-      const background = slide.meta.background ? " data-background" : "";
-      return `
-        <button class="thumbnail" type="button" data-index="${index}" aria-label="Go to slide ${index + 1}: ${escapeHtml(label)}">
-          <span class="thumbnail-preview" aria-hidden="true">
-            <span
-              class="thumbnail-slide slide"
-              data-layout="${escapeHtml(String(slide.meta.layout || "default"))}"
-              data-fit="${escapeHtml(getImageFit(slide.meta.fit))}"
-              ${background}${style}
-            >
-              ${renderSlideContent(slide)}
-            </span>
-          </span>
-          <span class="thumbnail-label">${index + 1}</span>
-        </button>
-      `;
-    })
-    .join("");
-  updateThumbnails();
+  renderThumbnailList({
+    deck: state.deck,
+    current: state.current,
+    thumbnailsEl,
+  });
+  updateThumbnailScrollButtons(thumbnailControls);
 }
 
 function updateThumbnails() {
-  for (const thumbnail of thumbnailsEl.querySelectorAll(".thumbnail")) {
-    const isCurrent = Number(thumbnail.dataset.index) === state.current;
-    thumbnail.classList.toggle("is-current", isCurrent);
-    thumbnail.toggleAttribute("aria-current", isCurrent);
-  }
-
-  const current = thumbnailsEl.querySelector(".thumbnail.is-current");
-  current?.scrollIntoView({ block: "nearest", inline: "center" });
-  updateThumbnailScrollButtons();
+  updateThumbnailList({
+    current: state.current,
+    ...thumbnailControls,
+  });
 }
 
 function toggleThumbnails() {
   const isVisible = thumbnailTrayEl.classList.toggle("is-visible");
   thumbsButton.setAttribute("aria-pressed", String(isVisible));
-  updateThumbnailScrollButtons();
-}
-
-function scrollThumbnails(direction) {
-  const distance = Math.max(thumbnailsEl.clientWidth * 0.72, 180);
-  thumbnailsEl.scrollBy({ left: direction * distance, behavior: "smooth" });
-}
-
-function updateThumbnailScrollButtons() {
-  const maxScroll = Math.max(0, thumbnailsEl.scrollWidth - thumbnailsEl.clientWidth);
-  const canScroll = thumbnailTrayEl.classList.contains("is-visible") && maxScroll > 1;
-  thumbnailsScrollLeftButton.disabled = !canScroll || thumbnailsEl.scrollLeft <= 1;
-  thumbnailsScrollRightButton.disabled = !canScroll || thumbnailsEl.scrollLeft >= maxScroll - 1;
-}
-
-function getSlideLabel(slide, index) {
-  const firstHeading = slide.html.match(/<h[1-3]>(.*?)<\/h[1-3]>/);
-  if (!firstHeading) return `Slide ${index + 1}`;
-  return firstHeading[1].replace(/<[^>]+>/g, "").trim() || `Slide ${index + 1}`;
+  updateThumbnailScrollButtons(thumbnailControls);
 }
 
 function goToSlide(index) {
@@ -658,15 +215,20 @@ function handleKeydown(event) {
   action();
 }
 
+function showError(error) {
+  slideEl.dataset.layout = "center";
+  slideEl.innerHTML = `<h2>Deck error</h2><p>${escapeHtml(error.message)}</p>`;
+}
+
 previousButton.addEventListener("click", () => goToSlide(state.current - 1));
 nextButton.addEventListener("click", () => goToSlide(state.current + 1));
 notesButton.addEventListener("click", () => notesEl.classList.toggle("is-visible"));
 thumbsButton.addEventListener("click", toggleThumbnails);
-thumbnailsScrollLeftButton.addEventListener("click", () => scrollThumbnails(-1));
-thumbnailsScrollRightButton.addEventListener("click", () => scrollThumbnails(1));
+thumbnailsScrollLeftButton.addEventListener("click", () => scrollThumbnailList(thumbnailsEl, -1));
+thumbnailsScrollRightButton.addEventListener("click", () => scrollThumbnailList(thumbnailsEl, 1));
 themeButton.addEventListener("click", toggleTheme);
 fullscreenButton.addEventListener("click", toggleFullscreen);
-thumbnailsEl.addEventListener("scroll", updateThumbnailScrollButtons);
+thumbnailsEl.addEventListener("scroll", () => updateThumbnailScrollButtons(thumbnailControls));
 thumbnailsEl.addEventListener("click", (event) => {
   const thumbnail = event.target.closest(".thumbnail");
   if (!thumbnail) return;
@@ -685,13 +247,8 @@ document.addEventListener("fullscreenchange", () => {
 });
 window.addEventListener("resize", () => {
   updateSlideSize();
-  updateThumbnailScrollButtons();
+  updateThumbnailScrollButtons(thumbnailControls);
 });
-
-function showError(error) {
-  slideEl.dataset.layout = "center";
-  slideEl.innerHTML = `<h2>Deck error</h2><p>${escapeHtml(error.message)}</p>`;
-}
 
 const initialSlide = Number(location.hash.slice(1));
 if (Number.isInteger(initialSlide) && initialSlide > 0) {
