@@ -18,6 +18,14 @@ To use a different port:
 ./showtime.sh 8080
 ```
 
+## Test
+
+Run the parser smoke tests with Node:
+
+```sh
+node --test tests/*.test.mjs
+```
+
 ## Write A Deck
 
 Create a Markdown file in `decks/` and separate slides with `---`.

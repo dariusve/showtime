@@ -1,6 +1,9 @@
+import { fetchDeckMarkdown } from "./src/decks.js";
 import { escapeHtml, parseSlides } from "./src/markdown.js";
+import { getDom } from "./src/dom.js";
 import { getColumnCount, getImageFit, renderSlideContent } from "./src/slides.js";
 import { formatCssUrl, getCssTime, getTransition, getTransitionEasing } from "./src/transitions.js";
+import { applyDeckMeta, toggleTheme as toggleDocumentTheme } from "./src/theme.js";
 import {
   renderThumbnails as renderThumbnailList,
   scrollThumbnails as scrollThumbnailList,
@@ -8,22 +11,24 @@ import {
   updateThumbnails as updateThumbnailList,
 } from "./src/thumbnails.js";
 
-const slideEl = document.querySelector("#slide");
-const stageEl = document.querySelector(".stage");
-const notesEl = document.querySelector("#notes");
-const progressEl = document.querySelector("#progress");
-const deckInput = document.querySelector("#deck-input");
-const loadButton = document.querySelector("#load-deck");
-const previousButton = document.querySelector("#prev");
-const nextButton = document.querySelector("#next");
-const notesButton = document.querySelector("#notes-toggle");
-const thumbsButton = document.querySelector("#thumbs-toggle");
-const themeButton = document.querySelector("#theme-toggle");
-const fullscreenButton = document.querySelector("#fullscreen");
-const thumbnailTrayEl = document.querySelector("#thumbnail-tray");
-const thumbnailsEl = document.querySelector("#thumbnails");
-const thumbnailsScrollLeftButton = document.querySelector("#thumbs-scroll-left");
-const thumbnailsScrollRightButton = document.querySelector("#thumbs-scroll-right");
+const {
+  slideEl,
+  stageEl,
+  notesEl,
+  progressEl,
+  deckInput,
+  loadButton,
+  previousButton,
+  nextButton,
+  notesButton,
+  thumbsButton,
+  themeButton,
+  fullscreenButton,
+  thumbnailTrayEl,
+  thumbnailsEl,
+  thumbnailsScrollLeftButton,
+  thumbnailsScrollRightButton,
+} = getDom();
 
 const state = {
   deck: [],
@@ -36,11 +41,6 @@ const state = {
   transitionDelay: "0ms",
 };
 
-const builtInThemes = {
-  dark: {},
-  paper: {},
-};
-
 const thumbnailControls = {
   thumbnailsEl,
   thumbnailTrayEl,
@@ -48,39 +48,12 @@ const thumbnailControls = {
   thumbnailsScrollRightButton,
 };
 
-function applyDeckMeta(meta) {
-  state.title = meta.title || "Showtime";
-  document.title = state.title;
-
-  if (meta.theme && builtInThemes[meta.theme]) {
-    state.theme = meta.theme;
-    document.body.dataset.theme = meta.theme === "paper" ? "paper" : "";
-  }
-
-  state.transition = getTransition(meta.transition);
-  state.transitionDuration = getCssTime(meta.transitionDuration, "700ms");
-  state.transitionEasing = getTransitionEasing(meta.transitionEasing, "ease-out");
-  state.transitionDelay = getCssTime(meta.transitionDelay, "0ms");
-
-  const tokens = ["background", "surface", "text", "muted", "accent", "fontBody", "fontHeading"];
-  for (const token of tokens) {
-    if (!meta[token]) continue;
-    const cssName = token.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-    document.documentElement.style.setProperty(`--${cssName}`, meta[token]);
-  }
-}
-
 async function loadDeck(path) {
-  const response = await fetch(path);
-  if (!response.ok) {
-    throw new Error(`Could not load ${path}`);
-  }
-
-  const markdown = await response.text();
+  const markdown = await fetchDeckMarkdown(path, import.meta.url);
   const parsed = parseSlides(markdown);
   state.deck = parsed.slides;
   state.current = Math.min(state.current, Math.max(state.deck.length - 1, 0));
-  applyDeckMeta(parsed.meta);
+  applyDeckMeta(parsed.meta, state);
   renderThumbnails();
   renderSlide();
 }
@@ -180,8 +153,7 @@ function goToSlide(index) {
 }
 
 function toggleTheme() {
-  state.theme = document.body.dataset.theme === "paper" ? "dark" : "paper";
-  document.body.dataset.theme = state.theme === "paper" ? "paper" : "";
+  toggleDocumentTheme(state);
 }
 
 function toggleFullscreen() {
