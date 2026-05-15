@@ -49,7 +49,7 @@ const thumbnailControls = {
 };
 
 const SLIDE_DESIGN_WIDTH = 1180;
-const LOW_RES_SLIDE_SCALE_FACTOR = 0.95;
+const LOW_RES_SLIDE_SCALE_FACTOR = 0.9025;
 const MIN_LOW_RES_SLIDE_SCALE = 0.42 * LOW_RES_SLIDE_SCALE_FACTOR;
 
 async function loadDeck(path) {
