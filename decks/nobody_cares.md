@@ -136,8 +136,7 @@ Una como persona. Otra como profesional.
 Transición al corazón del tema. Aquí el público de ingeniería empieza a identificarse.
 
 ---
-layout: columns
-columns: 2
+layout: compare
 
 ## El ruido de la industria
 
@@ -265,7 +264,7 @@ Este tema genera mucha discusión. Prepárate para reacciones del público.
 
 ## El origen del mito
 
-Un estudio de **1968** — Sackman, Erikson y Grant — encontró variaciones de 10 a 1 en productividad.
+Un estudio de **1968** encontró variaciones de 10 a 1 en productividad.
 
 Lo que nadie menciona: 
 - Fallas metodológicas graves, 
