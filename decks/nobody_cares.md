@@ -54,7 +54,6 @@ columns: 2
 - Parques Tecnológicos
 - SaaS
 - Integración de IA
-- Entretenimiento
 
 ---
 

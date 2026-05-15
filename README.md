@@ -94,6 +94,8 @@ Slides scale to the available presentation stage while preserving a 16:9 aspect 
 
 Typography, spacing, padding, tables, code blocks, and text block modifiers are driven by the rendered slide size. This keeps slides readable on laptop screens and large auditorium displays.
 
+Below the 1180px design width, that responsive scale is reduced by 5% so lower-resolution displays keep the same perceived density.
+
 When changing slide formatting, update this README in the same change. New layouts, text block styles, responsive sizing rules, or Markdown conventions should be documented here with a short example.
 
 ## Columns

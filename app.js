@@ -48,6 +48,10 @@ const thumbnailControls = {
   thumbnailsScrollRightButton,
 };
 
+const SLIDE_DESIGN_WIDTH = 1180;
+const LOW_RES_SLIDE_SCALE_FACTOR = 0.95;
+const MIN_LOW_RES_SLIDE_SCALE = 0.42 * LOW_RES_SLIDE_SCALE_FACTOR;
+
 async function loadDeck(path) {
   const markdown = await fetchDeckMarkdown(path, import.meta.url);
   const parsed = parseSlides(markdown);
@@ -106,7 +110,9 @@ function updateSlideSize() {
   const widthFromHeight = availableHeight * (16 / 9);
   const slideWidth = Math.max(280, Math.min(availableWidth, widthFromHeight));
   const slideHeight = slideWidth * (9 / 16);
-  const slideScale = Math.max(0.42, Math.min(2.25, slideWidth / 1180));
+  const baseSlideScale = slideWidth / SLIDE_DESIGN_WIDTH;
+  const scaledSlideScale = baseSlideScale < 1 ? baseSlideScale * LOW_RES_SLIDE_SCALE_FACTOR : baseSlideScale;
+  const slideScale = Math.max(MIN_LOW_RES_SLIDE_SCALE, Math.min(2.25, scaledSlideScale));
 
   document.documentElement.style.setProperty("--computed-slide-width", `${slideWidth}px`);
   document.documentElement.style.setProperty("--computed-slide-height", `${slideHeight}px`);
