@@ -22,8 +22,7 @@ layout: title
 Las influencias externas del desarrollador de software  
 y el arte de enfocarse en lo que realmente importa.
 
-???
-Saluda al público. Pregunta: ¿cuántos de ustedes revisaron el teléfono en los últimos 10 minutos? Esa es la puerta de entrada al tema.
+
 
 ---
 layout: title
@@ -66,8 +65,6 @@ layout: title
 Las influencias externas del desarrollador de software  
 y el arte de enfocarse en lo que realmente importa.
 
-???
-Saluda al público. Pregunta: ¿cuántos de ustedes revisaron el teléfono en los últimos 10 minutos? Esa es la puerta de entrada al tema.
 
 ---
 
@@ -82,8 +79,7 @@ Bueno, no todo lo es, aun...
 pero en el futuro lo será.
 :::
 
-???
-Pausa dramática aquí. Deja que el público procese la lista.
+
 
 ---
 
@@ -96,8 +92,6 @@ Un catálogo interminable: TikTok, Instagram, YouTube...
 ...y casi siempre terminamos viendo contenido basura.
 :::
 
-???
-Pregunta al público: ¿cuánto tiempo pasaron ayer en redes sociales? El Brain-Rot es el contenido vacío y adictivo que domina los feeds.
 
 ---
 layout: compare
@@ -118,8 +112,7 @@ layout: compare
 - Ventas de productos
 - y un gran etcétera
 
-???
-Este dato siempre impacta. El mismo algoritmo, dos culturas de contenido completamente distintas. ¿Casualidad o decisión?
+
 
 ---
 layout: center
@@ -132,54 +125,38 @@ Este problema te golpea **dos veces**.
 Una como persona. Otra como profesional.
 :::
 
-???
-Transición al corazón del tema. Aquí el público de ingeniería empieza a identificarse.
+
 
 ---
 layout: compare
 
 ## El ruido de la industria
 
-Cada semana aparece algo nuevo.
-
-### Lo que escuchas
+**Lo que escuchas**
 
 - *"¿Ya aprendiste Rust? Ya quedaste obsoleto."*
 - *"Este framework tiene 200k stars en GitHub."*
 - *"Los 10 proyectos que TODO dev debe tener."*
 - Tabs vs spaces. Vim vs VSCode. REST vs GraphQL.
 
-### La realidad
+**La realidad**
+- Discusiones vacias
+- Perdida de tiempo aprendiendo cosas "nuevas"
+- Desgaste 
+- Adaptaciones de codigo innecesarias
 
-A tu usuario **no le importa qué usaste**.  
-Le **importa que funcione**, que **sea rápido** y que **resuelva su problema**.
 
-???
-Menciona que estos debates consumen energía mental real. Un desarrollador puede pasar horas discutiendo tabs vs spaces en lugar de escribir código.
 
----
-layout: center
-
-## ¿A quién le importa realmente?
-
-::: large
-**Al usuario final:** que el software funcione.  
-**Al cliente:** que resuelva su problema.  
-**A nadie más.**
-:::
-
-???
-Énfasis total aquí. Es el momento de mayor impacto de la primera mitad.
 
 ---
+
 layout: title
 
 # Los Gurús
 
 ### Más negocio que conocimiento
 
-???
-Cambio de tono. Usa un tono más irónico aquí.
+
 
 ---
 
@@ -193,8 +170,7 @@ Cambio de tono. Usa un tono más irónico aquí.
 > Su modelo de negocio no es la programación.  
 > Es **el estilo de vida del desarrollador de software**.
 
-???
-Pregunta retórica: ¿cuántos de ustedes han sentido que necesitan un mejor setup para programar mejor?
+
 
 ---
 layout: columns
@@ -204,7 +180,7 @@ columns: 2
 
 ### **El hardware**
 
-- MacBook Pro — *"para profesionales"*
+- MacBook Pro - *"para profesionales"*
 - Monitor Ultrawide o un Apple Studio Display
 - Teclado mecánico costoso
 - Mouse Logitech MX Master 3
@@ -212,15 +188,14 @@ columns: 2
 
 ### **La realidad**
 
-**Linus Torvalds** — creador del kernel Linux y de Git — **creó Linux en una computadora ordinaria.**
+**Linus Torvalds** - creador del kernel Linux y de Git - **creó Linux en una computadora ordinaria.**
 
 ::: large 
 > El hardware no escribe el código. 
 > **Tú sí.**
 :::
 
-???
-Este slide genera reacción inmediata. Muchos estudiantes sienten alivio al escuchar esto.
+
 
 ---
 layout: columns
@@ -247,8 +222,7 @@ Su incentivo es **tu próxima compra**.
 > Filtra el consejo según quien lo da y qué gana con él.
 :::
 
-???
-Cita el principio central. Deja que el público reflexione.
+
 
 ---
 layout: title
@@ -257,8 +231,7 @@ layout: title
 
 ### ¿Genio o cuento conveniente?
 
-???
-Este tema genera mucha discusión. Prepárate para reacciones del público.
+
 
 ---
 
@@ -274,8 +247,7 @@ Lo que nadie menciona:
 
 El mito ya estaba suelto. Y era **muy conveniente**.
 
-???
-Importante dar el contexto histórico. El mito tiene casi 60 años y sigue siendo usado.
+
 
 ---
 layout: compare
@@ -296,8 +268,7 @@ layout: compare
 - Resuelve como diez
 - Cobra como uno
 
-???
-Este contraste suele generar un momento de reconocimiento incómodo en el público. Deja que procesen.
+
 
 ---
 
@@ -311,8 +282,7 @@ Este contraste suele generar un momento de reconocimiento incómodo en el públi
 Eso no es admirable. Es un síntoma de **mala planificación**, **mal liderazgo** y equipos con **recursos insuficientes**.
 
 
-???
-Señala que los equipos sanos no necesitan héroes. Los héroes son una señal de alarma, no de éxito.
+
 
 ---
 
@@ -331,8 +301,7 @@ Lo que sí existe: **desarrolladores con dominio profundo de fundamentos**.
 Eso no es ser 10X. Es ser **competente**.  
 Y es **completamente alcanzable**.
 
-???
-El mensaje esperanzador de esta sección. La excelencia no es un don, es una práctica.
+
 
 ---
 
@@ -345,8 +314,6 @@ Es el que **hace las preguntas correctas** antes de escribir una sola línea de 
 El que diseña soluciones que **no necesitan al héroe** para mantenerse vivas.
 
 
-???
-Conecta con el tema central: enfoque y fundamentos, no talento mítico ni herramientas de moda.
 
 ---
 layout: title
@@ -355,8 +322,7 @@ layout: title
 
 ### El TikTok corporativo
 
-???
-El título solo ya genera risas de reconocimiento. Deja que reaccionen.
+
 
 ---
 
@@ -373,8 +339,7 @@ Abres la app. Revisas quién fue. Empiezas a ver el feed.
 **Scroll infinito de TikTok. Con corbata.**
 
 
-???
-Este momento de reconocimiento es muy poderoso. Casi todos lo han vivido.
+
 
 ---
 
@@ -390,8 +355,7 @@ Este momento de reconocimiento es muy poderoso. Casi todos lo han vivido.
 > Lo más emocional, lo más polémico, lo más aspiracional.
 :::
 
-???
-Pregunta al público: ¿alguien ha publicado algo en LinkedIn esta semana? ¿Por qué?
+
 
 ---
 layout: compare
@@ -412,8 +376,7 @@ layout: compare
 - Equipos que confían en tu criterio
 - Problemas difíciles bien resueltos
 
-???
-La pregunta clave: ¿cuánto tiempo dedicas a cada columna?
+
 
 ---
 ## El reclutador que no leyó tu perfil
@@ -429,8 +392,7 @@ La pregunta clave: ¿cuánto tiempo dedicas a cada columna?
 
 LinkedIn **monetiza** esa **ansiedad**. Es su **modelo de negocio.**
 
-???
-Conecta con la sección de procrastinación que viene después. Las interrupciones tienen un costo real.
+
 
 ---
 layout: title
@@ -439,8 +401,7 @@ layout: title
 
 ### La sabiduría colectiva que no siempre lo es
 
-???
-Reddit es más sutil que LinkedIn o TikTok. El daño viene disfrazado de comunidad técnica.
+
 
 ---
 
@@ -458,8 +419,7 @@ Reddit es más sutil que LinkedIn o TikTok. El daño viene disfrazado de comunid
 Ese ambiente no filtra a los malos desarrolladores.  
 Filtra a los que **están aprendiendo**.
 
-???
-Importante para el público universitario que está empezando. Reddit puede ser muy desalentador.
+
 
 ---
 
@@ -476,8 +436,7 @@ Importante para el público universitario que está empezando. Reddit puede ser 
 > **Ninguno** de estos debates **resuelve problemas reales**. Pero **crean identidades tribales** alrededor de decisiones que deberían tomarse según el contexto del proyecto.
 :::
 
-???
-Pregunta al público: ¿alguien ha participado en alguno de estos debates? ¿Cuánto tiempo le dedicó?
+
 
 ---
 layout: center
@@ -509,8 +468,7 @@ Leer hilos técnicos se siente exactamente igual que aprender.
 La **lectura pasiva** activa las mismas regiones del cerebro  
 que el **aprendizaje activo**, pero **sin** el mismo **resultado**.
 
-???
-El equivalente cognitivo de ver documentales de atletismo en lugar de salir a correr.
+
 
 ---
 ## El efecto cámara de eco
@@ -525,8 +483,7 @@ Los algoritmos de upvote no seleccionan la verdad.
 En el mundo real **hay millones de líneas de código en producción** escritas en tecnologías que Reddit desprecia, 
 **resolviendo problemas reales**.
 
-???
-Importante desmitificar el consenso de Reddit como verdad universal de la industria.
+
 
 ---
 
@@ -545,8 +502,7 @@ Importante desmitificar el consenso de Reddit como verdad universal de la indust
 > **Si la respuesta es no, estabas consumiendo ruido, no aprendiendo.**
 :::
 
-???
-Deja esta pregunta resonando. Es una prueba práctica que pueden aplicar hoy mismo.
+
 
 ---
 layout: title
@@ -555,8 +511,7 @@ layout: title
 
 ### La nueva frontera del ruido
 
-???
-Este tema es fresco y relevante. El público universitario lo conoce bien.
+
 
 ---
 
@@ -572,8 +527,7 @@ publicó en X:
 **4.5 millones de visualizaciones.**  
 Palabra del Año 2025 — Collins Dictionary.
 
-???
-Lee la cita despacio. Deja que el público reaccione. Muchos ya la conocen.
+
 
 ---
 
@@ -591,8 +545,7 @@ Lee la cita despacio. Deja que el público reaccione. Muchos ya la conocen.
 **Ene 2026** — Linus Torvalds usa vibe coding en su proyecto AudioNoise  
 :::
 
-???
-Este timeline es uno de los puntos más valiosos de la presentación. Muestra que la industria aprendió en tiempo real.
+
 
 ---
 layout: columns
@@ -616,8 +569,7 @@ columns: 2
 - Atrofia de habilidades
 - Infierno de desarrollo con código IA
 
-???
-Equilibra el mensaje aquí. No es anti-IA, es pro-criterio.
+
 
 ---
 layout: center
@@ -630,8 +582,7 @@ Simon Willison — co-creador de Django —:
 > *"Si un modelo de lenguaje escribió cada línea de tu código, pero lo revisaste, lo probaste y lo entendiste todo, eso no es vibe coding — eso es usar un modelo de lenguaje como asistente de escritura."*
 :::
 
-???
-Esta cita es clave. La diferencia no es si usas IA. Es si entiendes lo que hace.
+
 
 ---
 layout: center
@@ -646,8 +597,7 @@ layout: center
 — Fast Company, septiembre 2025
 :::
 
-???
-Pausa aquí. Es uno de los momentos más poderosos de la presentación.
+
 
 ---
 layout: title
@@ -656,8 +606,7 @@ layout: title
 
 ### Rubber Duck Debugging
 
-???
-El cambio de tono aquí funciona muy bien. De lo abstracto a lo concreto y casi gracioso.
+
 
 ---
 layout: center
@@ -671,8 +620,7 @@ Verbalizar obliga a ser preciso.
 El cerebro no puede llenar los huecos automáticamente.
 :::
 
-???
-Pregunta al público: ¿alguien ha resuelto un bug explicándoselo a alguien más? Eso es exactamente lo mismo.
+
 
 ---
 layout: center
@@ -687,8 +635,7 @@ El patito no te da la respuesta.
 **Te hace ganártela.**
 :::
 
-???
-Conecta directamente con el problema del vibe coding. El patito es el antídoto.
+
 
 ---
 
@@ -703,8 +650,6 @@ Conecta directamente con el problema del vibe coding. El patito es el antídoto.
 > Cuando llegas a la IA habiendo pasado por estos pasos, le **haces mejores preguntas** y puedes **detectar cuando te genera basura**.
 :::
 
-???
-Este flujo es práctico y accionable. El público puede aplicarlo mañana mismo.
 
 ---
 layout: title
@@ -713,8 +658,7 @@ layout: title
 
 ### El enemigo silencioso
 
-???
-Cambio de ritmo. Este tema conecta con todos, no solo con devs.
+
 
 ---
 
@@ -729,8 +673,7 @@ pegados en redes sociales.
 
 Esto **rompe la concentración** y hace **que cueste el doble** retomar el hilo del trabajo.
 
-???
-Pregunta directa al público. Muestra de manos voluntaria.
+
 
 ---
 layout: compare
@@ -753,8 +696,7 @@ layout: compare
 - Permite resolver problemas complejos
 - Consolida lo aprendido
 
-???
-El Ritmo Ultradiano es fisiología, no productividad inventada. El cerebro ya funciona en ciclos de ~90 minutos.
+
 
 ---
 
@@ -768,16 +710,13 @@ El Ritmo Ultradiano es fisiología, no productividad inventada. El cerebro ya fu
 > Sin interrupciones. Sin alarmas. Con el cerebro en modo profundo.
 :::
 
-???
-Contrasta con cuántas interrupciones tiene normalmente un día de trabajo: Slack, emails, reuniones, notificaciones.
+
 
 ---
 layout: title
 
 # Lo que realmente **importa**
 
-???
-El cierre. Baja el ritmo. Habla despacio.
 
 ---
 layout: center
@@ -789,8 +728,7 @@ layout: center
 define a un buen desarrollador de software.
 :::
 
-???
-Pausa larga aquí. Deja que procesen todo lo que vieron.
+
 
 ---
 
@@ -809,8 +747,7 @@ Pausa larga aquí. Deja que procesen todo lo que vieron.
 > y **resuelve el problema correctamente**.
 :::
 
-???
-Este es el núcleo de toda la presentación. Todo lo anterior fue contexto para llegar aquí.
+
 
 ---
 layout: center
@@ -821,8 +758,7 @@ layout: center
 *¿Esto me hace mejor desarrollador de software, o solo me hace sentir que necesito comprar, aprender o delegar algo que debería entender?*
 :::
 
-???
-Deja la pregunta flotando. No la respondas tú. Que el público la responda.
+
 
 ---
 layout: title
@@ -831,8 +767,7 @@ layout: title
 
 ## **Enfócate en lo que importa.**
 
-???
-Silencio. Deja que caiga. Luego abre para preguntas.
+
 
 ---
 layout: center
@@ -866,8 +801,7 @@ desde archivos **Markdown**.
 > Sin frameworks. Sin dependencias. Sin formato escondido.
 :::
 
-???
-Conecta esto con la charla: una herramienta pequeña que privilegia entender lo que está pasando.
+
 
 ---
 layout: compare
@@ -888,8 +822,6 @@ layout: compare
 - Aplica layouts simples
 - Navega con teclado, controles y fullscreen
 
-???
-No lo vendas como PowerPoint. Véndelo como una forma sencilla de presentar ideas cuando quieres mantener el contenido en texto.
 
 ---
 
@@ -912,8 +844,6 @@ layout: title
 Notas privadas para el presentador.
 ```
 
-???
-Muestra que una presentación completa puede empezar con texto simple. El formato no está escondido en una herramienta visual.
 
 ---
 layout: center
@@ -936,5 +866,4 @@ y adaptar sin pedir permiso.
 > https://www.github.com/dariusve/showtime
 :::
 
-???
-Esta slide cierra el círculo con el mensaje de Nobody Cares: usa herramientas que te acerquen al problema, no que te distraigan de él.
+
